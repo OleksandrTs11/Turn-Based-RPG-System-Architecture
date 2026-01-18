@@ -3,15 +3,17 @@ using UnityEngine;
 
 public partial class BattleScript : MonoBehaviour
 {
-    [Header("Warrior properties")]
+    [Header("Mage properties")]
     public GameObject WarriorObject;
     public Transform warriorTargetPos;
+    public ParticleSystem mageParticle;
     private UnityEngine.AI.NavMeshAgent warriorAgent;
     private Animator warriorAnimator;
 
-    [Header("Mage properties")]
+    [Header("Warrior properties")]
     public GameObject MageObject;
     public Transform mageTargetPos;
+    public ParticleSystem warriorParticle;
     private UnityEngine.AI.NavMeshAgent mageAgent;
     private Animator mageAnimator;
 
@@ -22,9 +24,9 @@ public partial class BattleScript : MonoBehaviour
 
     private Vector3 warriorHome;
     private Vector3 mageHome;
-
     public void Start()
     {
+        
         // Инициализация персонажей (Данные)
         warrior = new Warrior("Ivan", 400, 400, 20, 3, 10, 80);
         mage = new Mage("Gandalf", 250, 250, 40, 3, 30, 100, 100);
@@ -126,7 +128,12 @@ public partial class BattleScript : MonoBehaviour
             {
                 yield return StartCoroutine(MoveAndAttack(warriorAgent, warriorAnimator, mageTargetPos.position, warriorHome, () =>
                 {
+
                     warrior.Attack(mage, 25, 15);
+                    if (warriorParticle != null)
+                    {
+                        warriorParticle.Play();
+                    }
                 }));
                 actionMade = true;
             }
@@ -135,6 +142,10 @@ public partial class BattleScript : MonoBehaviour
                 yield return StartCoroutine(MoveAndAttack(warriorAgent, warriorAnimator, mageTargetPos.position, warriorHome, () =>
                 {
                     warrior.PowerStrike(mage);
+                    if (warriorParticle != null)
+                    {
+                        warriorParticle.Play();
+                    }
                 }));
                 actionMade = true;
             }
@@ -156,13 +167,30 @@ public partial class BattleScript : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                // Маг атакует с места (дистанционно)
-                mage.Attack(warrior, 15);
+                yield return StartCoroutine(MoveAndAttack(mageAgent, mageAnimator, warriorTargetPos.position, mageHome, () =>
+                {
+                    
+                    mage.Attack(warrior, 15);
+                    if (mageParticle != null)
+                    {
+                        mageParticle.Play();
+                    }
+
+                }));
                 actionMade = true;
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                mage.CastSpell(warrior);
+                yield return StartCoroutine(MoveAndAttack(mageAgent, mageAnimator, warriorTargetPos.position, mageHome, () =>
+                { 
+                    
+                    mage.CastSpell(warrior);
+                    if (mageParticle != null)
+                    {
+                        mageParticle.Play();
+                    }
+                }));
+               
                 actionMade = true;
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -179,8 +207,6 @@ public partial class BattleScript : MonoBehaviour
             yield return null;
         }
     }
-
-    // --- КЛАССЫ ПЕРСОНАЖЕЙ (ЛОГИКА) ---
 
     public class Character
     {
