@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public partial class BattleScript : MonoBehaviour
 {
@@ -13,7 +15,8 @@ public partial class BattleScript : MonoBehaviour
     [Header("Warrior properties")]
     public GameObject MageObject;
     public Transform mageTargetPos;
-    public ParticleSystem warriorParticle;
+    public VisualEffect warriorVfx;
+    
     private UnityEngine.AI.NavMeshAgent mageAgent;
     private Animator mageAnimator;
 
@@ -26,7 +29,9 @@ public partial class BattleScript : MonoBehaviour
     private Vector3 mageHome;
     public void Start()
     {
+        warriorVfx.Stop();
         
+
         // Инициализация персонажей (Данные)
         warrior = new Warrior("Ivan", 400, 400, 20, 3, 10, 80);
         mage = new Mage("Gandalf", 250, 250, 40, 3, 30, 100, 100);
@@ -130,9 +135,9 @@ public partial class BattleScript : MonoBehaviour
                 {
 
                     warrior.Attack(mage, 25, 15);
-                    if (warriorParticle != null)
+                    if (warriorVfx != null)
                     {
-                        warriorParticle.Play();
+                        warriorVfx.Play();
                     }
                 }));
                 actionMade = true;
@@ -142,9 +147,9 @@ public partial class BattleScript : MonoBehaviour
                 yield return StartCoroutine(MoveAndAttack(warriorAgent, warriorAnimator, mageTargetPos.position, warriorHome, () =>
                 {
                     warrior.PowerStrike(mage);
-                    if (warriorParticle != null)
+                    if (warriorVfx != null)
                     {
-                        warriorParticle.Play();
+                        warriorVfx.Play();
                     }
                 }));
                 actionMade = true;
