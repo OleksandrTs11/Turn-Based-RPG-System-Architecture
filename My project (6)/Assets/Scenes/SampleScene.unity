@@ -16181,11 +16181,7 @@ MonoBehaviour:
   mageParticle: {fileID: 593409066}
   MageObject: {fileID: 687331953}
   mageTargetPos: {fileID: 352997298}
-<<<<<<< Updated upstream
   warriorParticle: {fileID: 0}
-=======
-  warriorVfx: {fileID: 1405753018}
->>>>>>> Stashed changes
   FirstTurn: ' '
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
