@@ -32,18 +32,15 @@ public partial class BattleScript : MonoBehaviour
         warriorVfx.Stop();
         
 
-        // Инициализация персонажей (Данные)
+        // Инициализация персонажей
         warrior = new Warrior("Ivan", 400, 400, 20, 3, 10, 80);
         mage = new Mage("Gandalf", 250, 250, 40, 3, 30, 100, 100);
 
-        // Сохраняем позиции "дома"
         warriorHome = WarriorObject.transform.position;
         mageHome = MageObject.transform.position;
 
-        // Кэшируем компоненты Unity
         warriorAgent = WarriorObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         warriorAnimator = WarriorObject.GetComponent<Animator>();
-
         mageAgent = MageObject.GetComponent<UnityEngine.AI.NavMeshAgent>();
         mageAnimator = MageObject.GetComponent<Animator>();
 
@@ -51,10 +48,8 @@ public partial class BattleScript : MonoBehaviour
         StartCoroutine(BattleTurn());
     }
 
-    // Универсальный метод перемещения: Идет к цели -> Бьет -> Возвращается
     IEnumerator MoveAndAttack(UnityEngine.AI.NavMeshAgent agent, Animator anim, Vector3 destination, Vector3 homePosition, System.Action attackLogic)
     {
-        // 1. Идем к врагу
         agent.isStopped = false;
         agent.SetDestination(destination);
         anim.SetBool("isWalking", true);
@@ -66,26 +61,22 @@ public partial class BattleScript : MonoBehaviour
             yield return null;
         }
 
-        // 2. Атакуем
         anim.SetBool("isWalking", false);
 
-        // Поворачиваемся к врагу перед ударом (игнорируя высоту Y)
         Vector3 lookAtEnemy = new Vector3(destination.x, agent.transform.position.y, destination.z);
         agent.transform.LookAt(lookAtEnemy);
 
         anim.SetTrigger("Attack");
         attackLogic.Invoke();
 
-        // Ждем завершения анимации удара
         yield return new WaitForSeconds(1.5f);
 
-        // --- 3. ТЕЛЕПОРТАЦИЯ ДОМОЙ ---
-        agent.enabled = false; // Отключаем агент, чтобы он не мешал телепортации
-        agent.transform.position = homePosition; // Мгновенно перемещаем
-        agent.enabled = true; // Включаем обратно
+        // после атаки
+        agent.enabled = false;
+        agent.transform.position = homePosition; // teleport
+        agent.enabled = true; 
 
-        // 4. ПРАВИЛЬНЫЙ ПОВОРОТ ПОСЛЕ ТЕЛЕПОРТАЦИИ
-        // Разворачиваем персонажа лицом к цели (магу)
+        // разворот к противнику
         Vector3 lookAtTarget = new Vector3(destination.x, agent.transform.position.y, destination.z);
         agent.transform.LookAt(lookAtTarget);
 
